@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
         college: userData.college,
         company: userData.company,
         hourly_rate: userData.hourlyRate, // Use hourly_rate to match DB schema
-        -- Add other fields as per your 'users' table schema
+        
       })
 
       const { data, error } = await supabase.from('users').insert([newUserProfile])

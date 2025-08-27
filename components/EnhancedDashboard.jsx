@@ -364,7 +364,7 @@ export default function EnhancedDashboard() {
             setSelectedTask(null)
           }}
           taskId={selectedTask.id}
-          providerId={selectedTask.provider_id} {/* Use provider_id */}
+          providerId={selectedTask.provider_id}
           amount={selectedTask.budget}
           taskTitle={selectedTask.title}
           providerName="Provider Name" // This needs to be fetched from the provider's data
@@ -375,7 +375,7 @@ export default function EnhancedDashboard() {
       <WithdrawalModal
         isOpen={withdrawalModalOpen}
         onClose={() => setWithdrawalModalOpen(false)}
-        availableBalance={user.available_balance || 0} {/* Use available_balance */}
+        availableBalance={user.available_balance || 0}
       />
     </div>
   )
