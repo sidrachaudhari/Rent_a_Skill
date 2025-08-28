@@ -21,18 +21,51 @@ export const AuthProvider = ({ children }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session) {
-          // Fetch user profile from our 'users' table
-          const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
+          try {
+            // Fetch user profile from our 'users' table
+            const { data, error } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', session.user.id)
+              .single()
 
-          if (error) {
-            console.error('Error fetching user profile:', error)
+            if (error) {
+              console.error('Error fetching user profile:', error.message || error)
+              // For development, create a mock user profile if the table doesn't exist
+              if (error.code === 'PGRST116' || error.message?.includes('relation "users" does not exist')) {
+                console.warn('Users table does not exist. Using mock user profile for development.')
+                const mockUser = {
+                  id: session.user.id,
+                  name: session.user.email?.split('@')[0] || 'User',
+                  email: session.user.email,
+                  avatar_url: "/placeholder.svg",
+                  user_type: "seeker",
+                  profile_type: "student",
+                  bio: "",
+                  college: "",
+                  company: "",
+                  hourly_rate: 0,
+                  phone: "",
+                  location: "",
+                  is_verified: false,
+                  rating: 0,
+                  total_reviews: 0,
+                  completed_tasks: 0,
+                  total_earnings: 0,
+                  available_balance: 0,
+                  is_available: true,
+                  notification_preferences: {},
+                }
+                setUser(mockUser)
+              } else {
+                setUser(null)
+              }
+            } else if (data) {
+              setUser(data)
+            }
+          } catch (err) {
+            console.error('Unexpected error fetching user profile:', err.message || err)
             setUser(null)
-          } else if (data) {
-            setUser(data)
           }
         } else {
           setUser(null)
@@ -50,11 +83,43 @@ export const AuthProvider = ({ children }) => {
           .single()
           .then(({ data, error }) => {
             if (error) {
-              console.error('Error fetching initial user profile:', error)
-              setUser(null)
+              console.error('Error fetching initial user profile:', error.message || error)
+              // For development, create a mock user profile if the table doesn't exist
+              if (error.code === 'PGRST116' || error.message?.includes('relation "users" does not exist')) {
+                console.warn('Users table does not exist. Using mock user profile for development.')
+                const mockUser = {
+                  id: session.user.id,
+                  name: session.user.email?.split('@')[0] || 'User',
+                  email: session.user.email,
+                  avatar_url: "/placeholder.svg",
+                  user_type: "seeker",
+                  profile_type: "student",
+                  bio: "",
+                  college: "",
+                  company: "",
+                  hourly_rate: 0,
+                  phone: "",
+                  location: "",
+                  is_verified: false,
+                  rating: 0,
+                  total_reviews: 0,
+                  completed_tasks: 0,
+                  total_earnings: 0,
+                  available_balance: 0,
+                  is_available: true,
+                  notification_preferences: {},
+                }
+                setUser(mockUser)
+              } else {
+                setUser(null)
+              }
             } else if (data) {
               setUser(data)
             }
+          })
+          .catch((err) => {
+            console.error('Unexpected error fetching initial user profile:', err.message || err)
+            setUser(null)
           })
       }
     })
@@ -84,29 +149,51 @@ export const AuthProvider = ({ children }) => {
     }
 
     if (authData.user) {
-      const newUserProfile = createUser({
+      const newUserProfile = {
         id: authData.user.id,
         name: userData.name || "",
         email: userData.email || "",
         avatar_url: "/placeholder.svg", // Use avatar_url to match DB schema
         user_type: userData.type || UserTypes.SEEKER, // Use user_type to match DB schema
         profile_type: userData.profileType || ProfileTypes.STUDENT, // Use profile_type to match DB schema
-        bio: userData.bio,
-        college: userData.college,
-        company: userData.company,
-        hourly_rate: userData.hourlyRate, // Use hourly_rate to match DB schema
-        
-      })
-
-      const { data, error } = await supabase.from('users').insert([newUserProfile])
-
-      if (error) {
-        // If profile insertion fails, consider rolling back auth user or handling
-        console.error('Error inserting user profile:', error)
-        throw error
+        bio: userData.bio || "",
+        college: userData.college || "",
+        company: userData.company || "",
+        hourly_rate: userData.hourlyRate || 0, // Use hourly_rate to match DB schema
+        phone: userData.phone || "",
+        location: userData.location || "",
+        is_verified: false,
+        rating: 0,
+        total_reviews: 0,
+        completed_tasks: 0,
+        total_earnings: 0,
+        available_balance: 0,
+        is_available: true,
+        notification_preferences: {},
       }
-      // User data will be set by onAuthStateChange listener
-      return data
+
+      try {
+        const { data, error } = await supabase.from('users').insert([newUserProfile])
+
+        if (error) {
+          // If profile insertion fails, consider rolling back auth user or handling
+          console.error('Error inserting user profile:', error.message || error)
+          
+          // For development, if the table doesn't exist, just return the auth user
+          if (error.code === 'PGRST116' || error.message?.includes('relation "users" does not exist')) {
+            console.warn('Users table does not exist. Skipping profile creation for development.')
+            return authData.user
+          }
+          
+          throw error
+        }
+        // User data will be set by onAuthStateChange listener
+        return data
+      } catch (err) {
+        console.error('Unexpected error inserting user profile:', err.message || err)
+        // For development, if there's any error, just return the auth user
+        return authData.user
+      }
     }
     return null
   }
@@ -114,7 +201,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) {
-      console.error('Error logging out:', error)
+      console.error('Error logging out:', error.message || error)
       throw error
     }
     setUser(null)
@@ -129,7 +216,7 @@ export const AuthProvider = ({ children }) => {
         .select() // Select the updated data
 
       if (error) {
-        console.error('Error updating user profile:', error)
+        console.error('Error updating user profile:', error.message || error)
         throw error
       }
       if (data && data.length > 0) {

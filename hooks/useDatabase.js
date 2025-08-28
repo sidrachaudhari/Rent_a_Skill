@@ -18,16 +18,22 @@ export const useDatabase = () => {
     const fetchData = async () => {
       try {
         const tasksRes = await fetch('/api/tasks')
-        const tasksData = await tasksRes.json()
-        setTasks(tasksData)
+        if (tasksRes.ok) {
+          const tasksData = await tasksRes.json()
+          setTasks(tasksData)
+        }
 
         const skillsRes = await fetch('/api/skills')
-        const skillsData = await skillsRes.json()
-        setSkills(skillsData)
+        if (skillsRes.ok) {
+          const skillsData = await skillsRes.json()
+          setSkills(skillsData)
+        }
 
         const providersRes = await fetch('/api/providers')
-        const providersData = await providersRes.json()
-        setProviders(providersData)
+        if (providersRes.ok) {
+          const providersData = await providersRes.json()
+          setProviders(providersData)
+        }
 
         // Transactions might not be needed on initial load for all users
         // const transactionsRes = await fetch('/api/transactions')
@@ -50,6 +56,12 @@ export const useDatabase = () => {
         },
         body: JSON.stringify(taskData),
       })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create task')
+      }
+      
       const newTask = await response.json()
       setTasks((prevTasks) => [...prevTasks, newTask])
       return newTask
@@ -68,6 +80,12 @@ export const useDatabase = () => {
         },
         body: JSON.stringify(updates),
       })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update task')
+      }
+      
       const updatedTask = await response.json()
       setTasks((prevTasks) =>
         prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
@@ -88,6 +106,12 @@ export const useDatabase = () => {
         },
         body: JSON.stringify(transactionData),
       })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create transaction')
+      }
+      
       const newTransaction = await response.json()
       setTransactions((prevTransactions) => [...prevTransactions, newTransaction])
       return newTransaction
@@ -100,6 +124,13 @@ export const useDatabase = () => {
   const getTasksByUser = async (userId, type) => {
     try {
       const response = await fetch(`/api/tasks?userId=${userId}&type=${type}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error("Error fetching tasks:", errorData.error)
+        return []
+      }
+      
       const data = await response.json()
       return data
     } catch (error) {
@@ -116,6 +147,13 @@ export const useDatabase = () => {
       if (maxPrice) params.append('maxPrice', maxPrice)
 
       const response = await fetch(`/api/skills?${params.toString()}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error("Error searching skills:", errorData.error)
+        return []
+      }
+      
       const data = await response.json()
       return data
     } catch (error) {
@@ -131,6 +169,13 @@ export const useDatabase = () => {
       if (maxRate) params.append('maxRate', maxRate)
 
       const response = await fetch(`/api/providers?${params.toString()}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error("Error searching providers:", errorData.error)
+        return []
+      }
+      
       const data = await response.json()
       return data
     } catch (error) {

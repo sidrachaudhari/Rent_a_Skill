@@ -364,7 +364,7 @@ export default function EnhancedDashboard() {
             setSelectedTask(null)
           }}
           taskId={selectedTask.id}
-          providerId={selectedTask.provider_id}
+          providerId={selectedTask.provider_id || selectedTask.providerId}
           amount={selectedTask.budget}
           taskTitle={selectedTask.title}
           providerName="Provider Name" // This needs to be fetched from the provider's data

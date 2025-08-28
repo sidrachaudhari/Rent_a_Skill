@@ -190,7 +190,7 @@ function AppContent() {
                   Post Task
                 </Button>
                 <div className="flex items-center space-x-2">
-                  <img src={user.avatar || "/placeholder.svg"} alt={user.name} className="w-8 h-8 rounded-full" />
+                  <img src={user.avatar_url || "/placeholder.svg"} alt={user.name} className="w-8 h-8 rounded-full" />
                   <span className="hidden sm:block text-sm font-medium">{user.name}</span>
                 </div>
                 <Button variant="ghost" onClick={logout} className="text-gray-600">
@@ -293,7 +293,7 @@ function AppContent() {
               {user ? (
                 <>
                   <div className="flex items-center space-x-2">
-                    <img src={user.avatar || "/placeholder.svg"} alt={user.name} className="w-8 h-8 rounded-full" />
+                    <img src={user.avatar_url || "/placeholder.svg"} alt={user.name} className="w-8 h-8 rounded-full" />
                     <span className="hidden sm:block text-sm font-medium">{user.name}</span>
                   </div>
                   <Button onClick={() => setActiveTab("dashboard")} className="bg-purple-600 hover:bg-purple-700">

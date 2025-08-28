@@ -79,7 +79,98 @@ export default function AuthModal({ isOpen, onClose, defaultMode = "login" }) {
               <div className="text-red-500 text-sm text-center">{error}</div>
             )}
             {mode === "register" && (
-              <div>Test</div>
+              <>
+                <div>
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="type">I want to</Label>
+                  <select
+                    id="type"
+                    value={formData.type}
+                    onChange={(e) => handleInputChange("type", e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                    required
+                  >
+                    <option value={UserTypes.SEEKER}>Find Help</option>
+                    <option value={UserTypes.PROVIDER}>Provide Skills</option>
+                    <option value={UserTypes.BOTH}>Both</option>
+                  </select>
+                </div>
+
+                <div>
+                  <Label htmlFor="profileType">I am a</Label>
+                  <select
+                    id="profileType"
+                    value={formData.profileType}
+                    onChange={(e) => handleInputChange("profileType", e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                    required
+                  >
+                    <option value={ProfileTypes.STUDENT}>Student</option>
+                    <option value={ProfileTypes.GRADUATE}>Graduate</option>
+                    <option value={ProfileTypes.PROFESSIONAL}>Professional</option>
+                  </select>
+                </div>
+
+                {formData.profileType === ProfileTypes.STUDENT && (
+                  <div>
+                    <Label htmlFor="college">College/University</Label>
+                    <Input
+                      id="college"
+                      type="text"
+                      value={formData.college}
+                      onChange={(e) => handleInputChange("college", e.target.value)}
+                    />
+                  </div>
+                )}
+
+                {formData.profileType === ProfileTypes.PROFESSIONAL && (
+                  <div>
+                    <Label htmlFor="company">Company</Label>
+                    <Input
+                      id="company"
+                      type="text"
+                      value={formData.company}
+                      onChange={(e) => handleInputChange("company", e.target.value)}
+                    />
+                  </div>
+                )}
+
+                {formData.type !== UserTypes.SEEKER && (
+                  <>
+                    <div>
+                      <Label htmlFor="skills">Skills (comma-separated)</Label>
+                      <Input
+                        id="skills"
+                        type="text"
+                        value={formData.skills}
+                        onChange={(e) => handleInputChange("skills", e.target.value)}
+                        placeholder="e.g., React, Python, UI/UX Design"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="hourlyRate">Hourly Rate (₹)</Label>
+                      <Input
+                        id="hourlyRate"
+                        type="number"
+                        value={formData.hourlyRate}
+                        onChange={(e) => handleInputChange("hourlyRate", e.target.value)}
+                        placeholder="200"
+                      />
+                    </div>
+                  </>
+                )}
+              </>
             )}
 
             <div>

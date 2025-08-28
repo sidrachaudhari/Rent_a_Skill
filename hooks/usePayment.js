@@ -81,7 +81,7 @@ export const usePayment = () => {
         prefill: {
           name: user.name,
           email: user.email,
-          contact: user.phone_number || "", // Use user.phone_number
+          contact: user.phone || "", // Use user.phone to match DB schema
         },
         theme: {
           color: "#6C63FF",

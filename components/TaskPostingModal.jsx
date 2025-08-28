@@ -70,8 +70,8 @@ export default function TaskPostingModal({ isOpen, onClose }) {
         category: formData.category,
         budget: formData.budget[0],
         deadline: new Date(Date.now() + Number.parseInt(formData.deadline) * 60 * 60 * 1000).toISOString(),
-        seeker_id: user.id, // Changed to seeker_id
-        is_urgent: formData.isUrgent, // Changed to is_urgent
+        seekerId: user.id, // Use seekerId to match API expectation
+        isUrgent: formData.isUrgent, // Use isUrgent to match API expectation
         requirements: formData.requirements.split("\n").filter((r) => r.trim()),
       })
 
