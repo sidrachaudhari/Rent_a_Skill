@@ -334,6 +334,11 @@ function AppContent() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 text-center">
+            <Badge className="bg-yellow-400 text-gray-900 font-semibold">
+              🚧 Updated from feature/my-change branch
+            </Badge>
+          </div>
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
